@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>ファイルアップロード</title>
+    <link rel="stylesheet" href="./css/common.css">
+    <style>
+        body {
+            animation: fadeIn 1s linear 0s 1 normal;
+        }
+
+        @keyframes fadeIn {
+            0% {
+                opacity: 0
+            }
+            100% {
+                opacity: 1
+            }
+        }
+
+        div {
+            text-align: center;
+            max-width: 35%;
+            margin: 60px auto 0px auto;
+        }
+
+        #canvas {
+            margin: 30px;
+            max-width: 400px;
+            max-height: 400px;
+        }
+
+        label {
+            font-size: 18px;
+            color: white;  
+            background-color: #ff4da6;
+            padding: 6px;
+            border-radius: 12px;
+            border-width: thin;
+            }
+
+        .button {
+            width: 100px;
+            display       : inline-block;
+            border-radius : 12px;        
+            font-size     : 18pt;       
+            text-align    : center;      
+            cursor        : pointer;     
+            padding       : 6px;  
+            background    : #ff4da6;   
+            color         : #ffffff;    
+            border        : 2px solid #ff4da6;    
+        }
+
+        .button:hover {
+            color         : #ff4da6;
+            background    : #ffffff;
+        }
+    </style>
+</head>
+<body>
+<div id="upImg" style="width: 500px">
+    <form enctype="multipart/form-data" method="post">
+        <label for="file_photo">
+                ＋写真を選択
+                <input type="file" id="file_photo" name="file" accept="image/*" style="display:none;">
+            </label>
+    </form>
+</div>
+
+<canvas id="canvas" width="0" height="0"></canvas>
+
+<div id="upBtn">
+    <button class="button upImg btn btn-primary" id="upload">送信</button>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script>
+    function main() {
+        sendFile();
+    }
+
+    function sendFile() {
+        var file = null; // 選択されるファイル
+        var upFile = null; // 画像(BLOBデータ)
+        var fileName = "";
+        const THUMBNAIL_WIDTH = 800; // 画像リサイズ後の横の長さの最大値
+        const THUMBNAIL_HEIGHT = 800; // 画像リサイズ後の縦の長さの最大値
+
+        // ファイルが選択されたら
+        $('input[type=file]').change(function () {
+
+            // ファイルを取得
+            file = $(this).prop('files')[0];
+            fileName = "uploaded.jpg";
+            // 選択されたファイルが画像かどうか判定
+            if (file.type !== 'image/jpeg' && file.type !== 'image/png') {
+                // 画像でない場合は終了
+                file = null;
+                upFile = null;
+                return;
+            }
+
+            // 画像をリサイズする
+            var image = new Image();
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                image.onload = function () {
+                    var width, height;
+                    if (image.width > image.height) {
+                        // 横長の画像は横のサイズを指定値にあわせる
+                        var ratio = image.height / image.width;
+                        width = THUMBNAIL_WIDTH;
+                        height = THUMBNAIL_WIDTH * ratio;
+                    } else {
+                        // 縦長の画像は縦のサイズを指定値にあわせる
+                        var ratio = image.width / image.height;
+                        width = THUMBNAIL_HEIGHT * ratio;
+                        height = THUMBNAIL_HEIGHT;
+                    }
+                    // サムネ描画用canvasのサイズを上で算出した値に変更
+                    var canvas = $('#canvas')
+                        .attr('width', width)
+                        .attr('height', height);
+                    var ctx = canvas[0].getContext('2d');
+                    // canvasに既に描画されている画像をクリア
+                    ctx.clearRect(0, 0, width, height);
+                    // canvasにサムネイルを描画
+                    ctx.drawImage(image, 0, 0, image.width, image.height, 0, 0, width, height);
+
+                    // canvasからbase64画像データを取得
+                    var base64 = canvas.get(0).toDataURL('image/jpeg');
+                    // base64からBlobデータを作成
+                    var barr, bin, i, len;
+                    bin = atob(base64.split('base64,')[1]);
+                    len = bin.length;
+                    barr = new Uint8Array(len);
+                    i = 0;
+                    while (i < len) {
+                        barr[i] = bin.charCodeAt(i);
+                        i++;
+                    }
+                    upFile = new Blob([barr], {type: 'image/jpeg'});
+                    console.log(upFile);
+                };
+                image.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        });
+        // アップロード開始ボタンがクリックされたら
+        $('#upload').click(function () {
+            // ファイルが指定されていなければ何も起こらない
+            if (!file || !upFile) {
+                return;
+            }
+            var fd = new FormData();
+            fd.append('file', upFile, fileName); // ファイルを添付する
+
+            $.ajax({
+                url: "http://10.128.85.188:9999/saveFile", // 送信先
+                type: 'POST',
+                dataType: 'json',
+                data: fd,
+                processData: false,
+                contentType: false
+            }).done(function (result) {
+                // 送信成功
+                if (result.Status) {
+                    $.ajax({
+                        type: 'GET',
+                        url: 'http://10.128.85.188:9999/sendNotice?id=30001',
+                        dataType: 'json',
+                        success: function (result) {
+                            if (result.Status) {
+                                window.location.href = './button.html'
+                            } else {
+                                console.log(result);
+                            }
+                        },
+                        error: function () {
+                            alert("読み込み失敗");
+                        }
+                    });
+                } else {
+                    // 失敗時のログの表示
+                    console.log(result);
+                }
+            }).fail(function (result) {
+                // 送信失敗
+                console.log(result);
+            });
+        });
+    }
+
+    main();
+</script>
+</body>
+</html>

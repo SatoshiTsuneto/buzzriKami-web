@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang=ja>
+<head>
+    <meta charset="UTF-8">
+    <title>通知管理</title>
+    <link rel="stylesheet" href="./css/common.css">
+    <style>
+        body {
+            animation: fadeIn 1s linear 0s 1 normal;
+        }
+
+        @keyframes fadeIn {
+            0% {
+                opacity: 0
+            }
+            100% {
+                opacity: 1
+            }
+        }
+
+        div#imgUp {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<div id="imgUp">
+    <img src="">
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script>
+    function main() {
+        setInterval('recvNotice()', 100);
+        setInterval('reloadFunc()', 100);
+    }
+
+    function reloadFunc() {
+        $.ajax({
+            type: 'GET',
+            url: 'http://10.128.85.188:9999/recvNotice?id=30001',
+            dataType: 'json',
+            success: function (result) {
+                if (result.Flg) {
+                    $('#imgUp').children('img').attr('src', './img/uploaded.jpg?' + new Date());
+                }
+            }
+            ,
+            error: function () {
+                alert("読み込み失敗");
+            }
+        })
+        ;
+    }
+
+    function recvNotice() {
+        $.ajax({
+            type: 'GET',
+            url: 'http://10.128.85.188:9999/recvNotice?id=25002',
+            dataType: 'json',
+            success: function (result) {
+                if (result.Flg) {
+                    window.location.href = './shooting.html'
+                }
+            }
+            ,
+            error: function () {
+                alert("読み込み失敗");
+            }
+        })
+        ;
+    }
+
+    main();
+</script>
+</body>
+</html>

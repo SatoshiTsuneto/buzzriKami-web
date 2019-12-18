@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>バズり度管理</title>
+    <style>
+        body {
+            animation: fadeIn 1s linear 0s 1 normal;
+        }
+
+        @keyframes fadeIn {
+            0% {
+                opacity: 0
+            }
+            100% {
+                opacity: 1
+            }
+        }
+
+        div#show {
+            text-align: center;
+            margin-top: 25%;
+        }
+
+        h2{
+            max-width: 600px;
+            font-weight: normal;
+            margin: 0 auto;
+            color:333333;
+            padding-bottom:2px;
+            background: linear-gradient(135deg, #f44336 0%,#ff9800 17%,#ffeb3b 32%,#4caf50 50%,#2196f3 67%,#3f51b5 84%,#9c27b0 100%);
+        }
+
+        h2 span{
+            display: block;
+            background: #fff;
+            padding-bottom:10px;
+        }
+    </style>
+</head>
+<body>
+<div id="show">
+    <h2><span>　</span></h2>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script>
+    function main() {
+        setInterval('recvBuzz()', 100);
+    }
+
+    function recvBuzz() {
+        $.ajax({
+            type: 'GET',
+            url: 'http://10.128.85.188:9999/recvBuzz?id=25006',
+            dataType: 'json',
+            success: function (result) {
+                if (result.Buzz > 0) {
+                    $('#show').children('h2').children('span').html('あなたのバズり度は、' + result.Buzz + '%です！');
+                }
+            }
+            ,
+            error: function () {
+                alert("読み込み失敗");
+            }
+        })
+        ;
+    }
+
+    main();
+</script>
+</body>
+</html>
