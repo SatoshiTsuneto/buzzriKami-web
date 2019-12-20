@@ -84,6 +84,7 @@
     function sendFile() {
         var file = null; // 選択されるファイル
         var upFile = null; // 画像(BLOBデータ)
+        const IP_ADDRESS = '10.128.85.188';
         var fileName = "";
         const THUMBNAIL_WIDTH = 800; // 画像リサイズ後の横の長さの最大値
         const THUMBNAIL_HEIGHT = 800; // 画像リサイズ後の縦の長さの最大値
@@ -158,7 +159,7 @@
             fd.append('file', upFile, fileName); // ファイルを添付する
 
             $.ajax({
-                url: "http://10.128.85.188:9999/saveFile", // 送信先
+                url: 'http://' + IP_ADDRESS + ':9999/saveFile', // 送信先
                 type: 'POST',
                 dataType: 'json',
                 data: fd,
@@ -169,7 +170,7 @@
                 if (result.Status) {
                     $.ajax({
                         type: 'GET',
-                        url: 'http://10.128.85.188:9999/sendNotice?id=30001',
+                        url: 'http://' + IP_ADDRESS + ':9999/sendNotice?id=30001',
                         dataType: 'json',
                         success: function (result) {
                             if (result.Status) {

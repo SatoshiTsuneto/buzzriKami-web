@@ -50,21 +50,21 @@
     }
 
     function recvBuzz() {
+        const IP_ADDRESS = '10.128.85.188';
+        
         $.ajax({
             type: 'GET',
-            url: 'http://10.128.85.188:9999/recvBuzz?id=25006',
+            url: 'http://' + IP_ADDRESS + ':9999/recvBuzz?id=25006',
             dataType: 'json',
             success: function (result) {
                 if (result.Buzz > 0) {
                     $('#show').children('h2').children('span').html('あなたのバズり度は、' + result.Buzz + '%です！');
                 }
-            }
-            ,
+            },
             error: function () {
                 alert("読み込み失敗");
             }
-        })
-        ;
+        });
     }
 
     main();

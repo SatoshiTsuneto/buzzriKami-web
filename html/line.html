@@ -1,0 +1,246 @@
+<html lang="ja">
+<head>
+  <meta charset="UTF-8"/>
+  <title>バズ神神社</title>
+  <style>
+    .line__container {
+      padding:0;
+      background: #7494c0;
+      overflow: hidden;
+      max-width: 800px;
+      margin: 20px auto;
+      font-size: 80%;
+    }
+
+    /* タイトル部分 */
+    .line__container .line__title {
+      background: #273246;
+      padding: 10px;
+      text-align: center;
+      font-size: 150%;
+      color: #ffffff;
+    }
+
+    /* 会話部分 */
+    .line__container .line__contents {
+      padding: 10px;
+      overflow: hidden;
+      line-height: 135%;
+    }
+
+    .line__container .scroll {
+      height:1080px;
+      overflow-y: scroll;
+    }
+
+    .line__container .line__left {
+        width: 100%;
+        position: relative;
+        display: block;
+        margin-bottom: 5px;
+        max-width: 80%;
+        clear: both;
+    }
+
+    /* アイコン画像 */
+    .line__container .line__left figure {
+        width: 50px;
+        position: absolute;
+        top: 15px;
+        left: 0;
+        padding: 0;
+        margin: 0;
+    }
+
+    /* 正方形を用意 */
+    .line__container .line__left figure img{
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+    }
+
+    .line__container .line__left .line__left-text {
+      margin-left: 70px;
+    }
+
+    .line__container .line__left .line__left-text .name {
+      font-size: 80%;
+      color: #ffffff;
+    }
+
+    /* コメントエリア */
+    .line__container .line__left .text {
+      margin: 0;
+      position: relative;
+      padding: 10px;
+      border-radius: 20px;
+      background-color: #ffffff;
+    }
+
+    /* 吹き出し */
+    .line__container .line__left .text::after {
+      content: '';
+      position: absolute;
+      display: block;
+      width: 0;
+      height: 0;
+      left: -10px;
+      top: 10px;
+      border-right: 20px solid #ffffff;
+      border-top: 10px solid transparent;
+      border-bottom: 10px solid transparent;
+    }
+  </style>
+</head>
+<body>
+  <div class="line__container">
+    <div class="line__title">
+      バズ神神社
+    </div>
+
+    <!-- ▼会話エリア scrollを外すと高さ固定解除 -->
+    <div class="line__contents scroll" id="talk">
+
+      <div class="line__left">
+        <figure>
+          <img src="icon.png" />
+        </figure>
+        <div class="line__left-text">
+          <div class="name">式神</div>
+          <div class="text">
+            バズ神神社へようこそ！
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script>
+    function main() {
+      setInterval('nextTalk()', 100);
+    }
+
+    function nextTalk() {
+      const IP_ADDRESS = '10.128.85.188';
+
+      $.ajax({
+          type: 'GET',
+          url: 'http://' + IP_ADDRESS + ':9999/recvTalk?id=35001',
+          dataType: 'json',
+          success: function (result) {
+              if (result.Num > 0) {
+                switch (result.Num) {
+                  case 1:
+                    $('#talk').append(`
+                      <div class="line__left">
+                        <figure>
+                          <img src="icon.png" />
+                        </figure>
+                        <div class="line__left-text">
+                          <div class="name">式神</div>
+                          <div class="text">
+                            最初におみくじを引いてください！<br>
+                            その後に、おみくじで選ばれた流行りものと一緒に写真を撮ってアップロードしてください！
+                          </div>
+                        </div>
+                      </div>
+                    `);
+                    break;
+
+                  case 2:
+                    $('#talk').append(`
+                      <div class="line__left">
+                        <figure>
+                          <img src="icon.png" />
+                        </figure>
+                        <div class="line__left-text">
+                          <div class="name">式神</div>
+                          <div class="text">
+                            次に、制限時間内に奉納箱へ奉納物をたくさん入れてください！<br>
+                            制限時間は、１０秒です！
+                          </div>
+                        </div>
+                      </div>
+                    `);
+                    break;
+                  
+                  case 3:
+                  $.ajax({
+                      type: 'GET',
+                      url: 'http://' + IP_ADDRESS + ':9999/recvBullet?id=35002',
+                      dataType: 'json',
+                      success: function (data) {
+                        if (data.Bullet > 0) {
+                          $('#talk').append(`
+                            <div class="line__left">
+                              <figure>
+                                <img src="icon.png" />
+                              </figure>
+                              <div class="line__left-text">
+                                <div class="name">式神</div>
+                                <div class="text">
+                                  奉納箱の前を開けて、いいねの詰まったアイテムを取ってください！<br>
+                                  それを使って、壁のSNSアイコンから出てくるハートを撃ち、写真を拡散させましょう！<br>
+                                  弾数は、${data.Bullet}発です！
+                                </div>
+                              </div>
+                            </div>
+                          `);
+                        }
+                      },
+                      error: function () {
+                          alert("読み込み失敗");
+                      }
+                  });
+                    break;
+
+                  case 4:
+                    $('#talk').append(`
+                        <div class="line__left">
+                          <figure>
+                            <img src="icon.png" />
+                          </figure>
+                          <div class="line__left-text">
+                            <div class="name">式神</div>
+                            <div class="text">
+                              今までの結果を、写真がどれだけバズったかを発表します！<br>
+                              社殿の扉を見てください！
+                            </div>
+                          </div>
+                        </div>
+                      `);
+                    break;
+
+                  case 5:
+                    $('#talk').append(`
+                      <div class="line__left">
+                        <figure>
+                          <img src="icon.png" />
+                        </figure>
+                        <div class="line__left-text">
+                          <div class="name">式神</div>
+                          <div class="text">
+                            以上で終了です！<br>
+                            おつかれまさでした！
+                          </div>
+                        </div>
+                      </div>
+                    `);
+                    break;
+
+                  default:
+                }
+              }
+          },
+          error: function () {
+              alert("読み込み失敗");
+          }
+      })
+      ;
+    }
+
+    main();
+  </script>
+</body>
+</html>

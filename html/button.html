@@ -56,10 +56,12 @@
         }
 
         function sendNotice() {
+            const IP_ADDRESS = '10.128.85.188';
+            
             document.getElementById("btn").onclick = function() {
                 $.ajax({
                 type: 'GET',
-                url: 'http://10.128.85.188:9999/sendNotice?id=25001',
+                url: 'http://' + IP_ADDRESS + ':9999/sendNotice?id=25001',
                 dataType: 'json',
                 success: function (result) {
                     if (result.Status) {
