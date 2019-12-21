@@ -84,8 +84,8 @@
     function sendFile() {
         var file = null; // 選択されるファイル
         var upFile = null; // 画像(BLOBデータ)
-        const IP_ADDRESS = '10.128.85.188';
-        var fileName = "";
+        const IP_ADDRESS = '192.168.1.199';
+        const FILENAME = 'uploaded.jpg';
         const THUMBNAIL_WIDTH = 800; // 画像リサイズ後の横の長さの最大値
         const THUMBNAIL_HEIGHT = 800; // 画像リサイズ後の縦の長さの最大値
 
@@ -94,7 +94,7 @@
 
             // ファイルを取得
             file = $(this).prop('files')[0];
-            fileName = "uploaded.jpg";
+            
             // 選択されたファイルが画像かどうか判定
             if (file.type !== 'image/jpeg' && file.type !== 'image/png') {
                 // 画像でない場合は終了
@@ -156,7 +156,7 @@
                 return;
             }
             var fd = new FormData();
-            fd.append('file', upFile, fileName); // ファイルを添付する
+            fd.append('file', upFile, FILENAME); // ファイルを添付する
 
             $.ajax({
                 url: 'http://' + IP_ADDRESS + ':9999/saveFile', // 送信先
