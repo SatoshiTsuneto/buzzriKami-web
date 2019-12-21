@@ -122,7 +122,7 @@
     }
 
     function nextTalk() {
-      const IP_ADDRESS = '10.128.85.188';
+      const IP_ADDRESS = '192.168.1.199';
 
       $.ajax({
           type: 'GET',
@@ -166,33 +166,33 @@
                     break;
                   
                   case 3:
-                  $.ajax({
-                      type: 'GET',
-                      url: 'http://' + IP_ADDRESS + ':9999/recvBullet?id=35002',
-                      dataType: 'json',
-                      success: function (data) {
-                        if (data.Bullet > 0) {
-                          $('#talk').append(`
-                            <div class="line__left">
-                              <figure>
-                                <img src="icon.png" />
-                              </figure>
-                              <div class="line__left-text">
-                                <div class="name">式神</div>
-                                <div class="text">
-                                  奉納箱の前を開けて、いいねの詰まったアイテムを取ってください！<br>
-                                  それを使って、壁のSNSアイコンから出てくるハートを撃ち、写真を拡散させましょう！<br>
-                                  弾数は、${data.Bullet}発です！
+                    $.ajax({
+                        type: 'GET',
+                        url: 'http://' + IP_ADDRESS + ':9999/recvBullet?id=35002',
+                        dataType: 'json',
+                        success: function (data) {
+                          if (data.Bullet > 0) {
+                            $('#talk').append(`
+                              <div class="line__left">
+                                <figure>
+                                  <img src="icon.png" />
+                                </figure>
+                                <div class="line__left-text">
+                                  <div class="name">式神</div>
+                                  <div class="text">
+                                    奉納箱の前を開けて、いいねの詰まったアイテムを取ってください！<br>
+                                    それを使って、壁のSNSアイコンから出てくるハートを撃ち、写真を拡散させましょう！<br>
+                                    弾数は、${data.Bullet}発です！
+                                  </div>
                                 </div>
                               </div>
-                            </div>
-                          `);
+                            `);
+                          }
+                        },
+                        error: function () {
+                            alert("読み込み失敗");
                         }
-                      },
-                      error: function () {
-                          alert("読み込み失敗");
-                      }
-                  });
+                    });
                     break;
 
                   case 4:
@@ -229,9 +229,53 @@
                     `);
                     break;
 
+                    case 6:
+                      $.ajax({
+                        type: 'GET',
+                        url: 'http://' + IP_ADDRESS + ':9999/recvBullet?id=35002',
+                        dataType: 'json',
+                        success: function (data) {
+                          if (data.Bullet > 0) {
+                            $('#talk').append(`
+                              <div class="line__left">
+                                <figure>
+                                  <img src="icon.png" />
+                                </figure>
+                                <div class="line__left-text">
+                                  <div class="name">式神</div>
+                                  <div class="text">
+                                    残り弾数は、${data.Bullet}発です！
+                                  </div>
+                                </div>
+                              </div>
+                            `);
+                          } else {
+                            $('#talk').append(`
+                              <div class="line__left">
+                                <figure>
+                                  <img src="icon.png" />
+                                </figure>
+                                <div class="line__left-text">
+                                  <div class="name">式神</div>
+                                  <div class="text">
+                                    終了です！
+                                  </div>
+                                </div>
+                              </div>
+                            `);
+                          }
+                        },
+                        error: function () {
+                            alert("読み込み失敗");
+                        }
+                    });
+                    break;
+
                   default:
                 }
               }
+              var obj = document.getElementById('talk');
+              obj.scrollTop = obj.scrollHeight;
           },
           error: function () {
               alert("読み込み失敗");
