@@ -19,16 +19,14 @@
 
         div#show {
             text-align: center;
-            margin-top: 25%;
+            margin-top: 30%;
+            font-size: 100px;
         }
 
         h2{
             max-width: 600px;
             font-weight: normal;
             margin: 0 auto;
-            color:333333;
-            padding-bottom:2px;
-            background: linear-gradient(135deg, #f44336 0%,#ff9800 17%,#ffeb3b 32%,#4caf50 50%,#2196f3 67%,#3f51b5 84%,#9c27b0 100%);
         }
 
         h2 span{
@@ -49,8 +47,37 @@
         setInterval('recvBuzz()', 100);
     }
 
+    function mirrorChar(word = ""){
+        const startText = `
+            <div style='
+                transform: scale(1, -1);
+                width: 1em;
+                float: left;'
+            >
+        `;
+        const endText = '</div>';
+        
+        // 一旦文字列を文字にばらす
+        const converted = [];
+        for (let i = 0, len = word.length; i < len; i++) {
+            const char = word.charAt(i);
+            converted.push(char);
+        }
+        
+        // 順番を逆にしてつなげる
+        let reversed = '';
+        for (let i = 0, len = converted.length; i < len; i++) {
+            const popped = converted.pop();
+            reversed += popped;
+        }
+        
+        // X,Y軸をいじってつなげる
+        let buf = reversed.split('');
+        return startText + buf.join(endText + startText) + endText;
+    }
+
     function recvBuzz() {
-        const IP_ADDRESS = '10.128.85.188';
+        const IP_ADDRESS = '192.168.11.7';
         
         $.ajax({
             type: 'GET',
@@ -58,7 +85,8 @@
             dataType: 'json',
             success: function (result) {
                 if (result.Buzz > 0) {
-                    $('#show').children('h2').children('span').html('あなたのバズり度は、' + result.Buzz + '%です！');
+                    const word = result.Buzz + '%';
+                    $('#show').children('h2').children('span').html(mirrorChar(word));
                 }
             },
             error: function () {
