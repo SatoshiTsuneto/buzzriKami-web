@@ -123,6 +123,15 @@
 
     function nextTalk() {
       const IP_ADDRESS = '192.168.43.226';
+      const HAYARIMONO = new Array (
+          '吉',
+          '小吉',
+          '末吉',
+          '凶',
+          '大凶',
+          '大吉',
+          '中吉',
+      );
 
       $.ajax({
           type: 'GET',
@@ -140,15 +149,43 @@
                         <div class="line__left-text">
                           <div class="name">式神</div>
                           <div class="text">
-                            最初におみくじを引いてください！<br>
-                            その後に、おみくじで選ばれた流行りものと一緒に写真を撮ってアップロードしてください！
+                            最初にスマホの画面に出ているおみくじを引いてください！<br>
                           </div>
                         </div>
                       </div>
                     `);
                     break;
-
+                  
                   case 2:
+                    $.ajax({
+                        type: 'GET',
+                        url: 'http://' + IP_ADDRESS + ':9999/recvOmikuji?id=35005',
+                        dataType: 'json',
+                        success: function (data) {
+                          if (data.Result > 0) {
+                            $('#talk').append(`
+                              <div class="line__left">
+                                <figure>
+                                  <img src="icon.png" />
+                                </figure>
+                                <div class="line__left-text">
+                                  <div class="name">式神</div>
+                                  <div class="text">
+                                    おみくじで選ばれた流行りものと一緒に写真を撮ってアップロードしてください！<br>
+                                    今回選ばれたのは、${HAYARIMONO[data.Result]}です！
+                                  </div>
+                                </div>
+                              </div>
+                            `);
+                          }
+                        },
+                        error: function () {
+                            alert("読み込み失敗");
+                        }
+                    });
+                    break;
+
+                  case 3:
                     $('#talk').append(`
                       <div class="line__left">
                         <figure>
@@ -165,7 +202,7 @@
                     `);
                     break;
                   
-                  case 3:
+                  case 4:
                     $.ajax({
                         type: 'GET',
                         url: 'http://' + IP_ADDRESS + ':9999/recvBullet?id=35002',
@@ -195,7 +232,7 @@
                     });
                     break;
 
-                  case 4:
+                  case 5:
                     $('#talk').append(`
                         <div class="line__left">
                           <figure>
@@ -212,7 +249,7 @@
                       `);
                     break;
 
-                  case 5:
+                  case 6:
                     $('#talk').append(`
                       <div class="line__left">
                         <figure>
@@ -229,7 +266,7 @@
                     `);
                     break;
 
-                    case 6:
+                    case 7:
                       $.ajax({
                         type: 'GET',
                         url: 'http://' + IP_ADDRESS + ':9999/recvBullet?id=35002',

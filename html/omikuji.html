@@ -127,10 +127,14 @@
                         // 結果をポップアップで表示
                         $('#result').html(RESULT);
                         $('#result').addClass('show').fadeIn();
-                        // 結果をKtに伝える
+                        // 1.5秒後に結果をKtに伝える
                         setTimeout(function() {
                             sendResult(RAND);
-                        }, 5000);
+                            // 5秒後に画面遷移
+                            setTimeout(function() {
+                                window.location.href = './fileUploader.html';
+                            }, 5000);
+                        }, 1000);
                     }, 2500);
                 }, 300);
             });
@@ -150,7 +154,6 @@
                             dataType: 'json',
                             success: function (result) {
                                 console.log("Success.");
-                                window.location.href = './fileUploader.html';
                             },
                             error: function () { alert("読み込み失敗"); }
                         });

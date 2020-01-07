@@ -47,7 +47,7 @@
                     $('#imgUp').children('img').attr('src', './img/uploaded.jpg?' + new Date());
                     $.ajax({
                         type: 'GET',
-                        url: 'http://' + IP_ADDRESS + ':9999/sendTalk?id=35001&num=2',
+                        url: 'http://' + IP_ADDRESS + ':9999/sendTalk?id=35001&num=3',
                         dataType: 'json',
                         success: function (result) {
                             console.log("Success.")
