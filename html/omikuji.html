@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8" name="viewport" content="width=device-width,initial-scale=1">
+    <title>バズ神神社</title>
+    <style>
+        body {
+            animation: fadeIn 1s linear 0s 1 normal;
+        }
+        #omikuji {
+            /* animation: fluffy1 3s ease normal; */
+            margin:100px auto;
+            text-align: center;
+        }
+        @keyframes fadeIn {
+            0% {
+                opacity: 0
+            }
+            100% {
+                opacity: 1
+            }
+        }
+        @keyframes shake-anime {
+            0% { transform:translateY(0) }
+            5% { transform:translateY(0) }
+            10% { transform:translateY(0) }
+            20% { transform:translateY(35px) }
+            25% { transform:translateY(0) }
+            30% { transform:translateY(35px) }
+            35% { transform:translateY(0) }
+            40% { transform:translateY(55px) }
+            60% { transform:translateY(0) }
+            100% { transform:translateY(0) }
+        }
+        @keyframes rotate-anime {
+            0%  { transform: rotate(0) }
+            100%  { transform: rotate(180deg) }
+        }
+        #btn {
+            font-size: 20px;
+            text-align: center;
+            color: #ffffff;
+            background: #FFB74D;
+            box-shadow: 0 4px 0#FF9800;
+            border-radius: 20px;
+            width: 300px;
+            padding: 20px 0;
+            margin: 30px auto;
+            cursor: pointer;
+            user-select:none;
+        }
+        #btn:active {
+            box-shadow: 0 2px 0 #FF9800;
+        }
+        #hello {
+            color: red;
+        }
+        .img-wrap {
+            overflow: hidden;
+            position: relative;
+        }
+        .img-wrap:before {
+            animation: img-wrap 2s cubic-bezier(.4, 0, .2, 1) forwards;
+            background: #fff;
+            bottom: 0;
+            content: '';
+            left: 0;
+            pointer-events: none;
+            position: absolute;
+            right: 0;
+            top: 0;
+            z-index: 1;
+        }
+        @keyframes img-wrap {
+            100% {
+                transform: translateY(100%);
+            }
+        }
+        .popup {
+            display: none;
+            height: 100vh;
+            width: 100%;
+            background: aliceblue;
+            opacity: 1;
+            position: fixed;
+            top: 0;
+            left: 0;
+        }
+        .show {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+    <div id="omikuji" class="shake"><img src="./img/omikuji.png" alt="omikuji"></div>
+    <div id="result" class="popup img-wrap"></div>
+    <div id="btn">占う</div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+    <script>
+        function omikuji() {
+            // 画像の一覧
+            const IMG = new Array (
+                './img/result01.png',
+                './img/result02.png',
+                './img/result03.png',
+                './img/result04.png',
+                './img/result05.png',
+                './img/result06.png',
+                './img/result07.png'
+            );
+            // ボタンを押したら
+            $('#btn').on('click',function() {
+                // 画像の抽選とタグの作成
+                const RAND = Math.floor(Math.random() * IMG.length);
+                const RESULT = '<img src =' + IMG[RAND] + '>';
+                // ボタン消す
+                $('#btn').css('display', 'none');
+                // 画像を逆さまにする
+                $('#omikuji').children('img').attr('src', './img/re-omikuji.png?' + new Date());
+                // ちょっと待ってから、おみくじを振る
+                setTimeout(function() {
+                    $('.shake').css('animation', 'shake-anime 2.5s linear 1');
+                    setTimeout(function() {
+                        // 結果をポップアップで表示
+                        $('#result').html(RESULT);
+                        $('#result').addClass('show').fadeIn();
+                        // 結果をKtに伝える
+                        setTimeout(function() {
+                            sendResult(RAND);
+                        }, 5000);
+                    }, 2500);
+                }, 300);
+            });
+        }
+
+        function sendResult(data) {
+            const IP_ADDRESS = '192.168.43.226';
+            $.ajax({
+                type: 'GET',
+                url: 'http://' + IP_ADDRESS + ':9999/sendOmikuji?id=35003&result=' + data,
+                dataType: 'json',
+                success: function (result) {
+                    if (result.Status) {
+                        $.ajax({
+                            type: 'GET',
+                            url: 'http://' + IP_ADDRESS + ':9999/sendNotice?id=35004',
+                            dataType: 'json',
+                            success: function (result) {
+                                console.log("Success.");
+                                window.location.href = './fileUploader.html';
+                            },
+                            error: function () { alert("読み込み失敗"); }
+                        });
+                    }
+                },
+                error: function () {
+                    alert("読み込み失敗");
+                }
+            });
+        }
+        
+        function main() {
+            omikuji();
+        }
+
+        main();
+    </script>
+</body>
+</html>

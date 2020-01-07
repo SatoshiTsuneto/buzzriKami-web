@@ -56,7 +56,7 @@
         }
 
         function sendNotice() {
-            const IP_ADDRESS = '192.168.1.199';
+            const IP_ADDRESS = '192.168.43.226';
             
             document.getElementById("btn").onclick = function() {
                 $.ajax({
@@ -65,7 +65,7 @@
                 dataType: 'json',
                 success: function (result) {
                     if (result.Status) {
-                        window.location.href = './fileUploader.html'
+                        window.location.href = './omikuji.html'
                     }
                 }, error: function () {
                     alert("読み込み失敗");
